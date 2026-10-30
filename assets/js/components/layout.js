@@ -48,7 +48,7 @@ const active = currentPath === targetPath
 const sidebar = `
   <aside class="sidebar" id="appSidebar">
     <a class="sidebar-brand" href="${page("dashboard.html")}">
-      <span class="brand-mark">M</span>
+<img class="brand-mark" src="./assets/images/favicon.png">
       <span>
         MyOffice
         <span class="brand-sub">OPERATIONS WORKSPACE</span>

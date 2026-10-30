@@ -76,7 +76,7 @@ const sidebar = `
       <div class="topbar-left"><button class="icon-button menu-toggle" id="menuToggle" aria-label="Open navigation">☰</button><div><div class="topbar-title">Office workspace</div><div class="topbar-sub">Office · Internal portal</div></div></div>
       <div class="topbar-right"><div class="search-pill">⌕ &nbsp; Workspace overview</div><button class="icon-button" id="notificationsButton" aria-label="Notifications">♧</button><div class="profile"><div class="avatar">${escapeText(initials)}</div><div><div class="profile-name">${escapeText(username)}</div><div class="profile-role">${escapeText(role)}</div></div></div><button class="icon-button" id="logoutButton" aria-label="Sign out" title="Sign out">↪</button></div>
     </header>`;
-  const footer = `<footer class="app-footer"><span>© ${new Date().getFullYear()} <strong>Department of Treasuries</strong></span><span>Built for clarity · <strong>Office Portal</strong></span></footer>`;
+  const footer = `<footer class="app-footer"><span>© ${new Date().getFullYear()} <strong>Workspace</strong></span><span>Built for clarity · <strong>Office Portal</strong></span></footer>`;
 
   function escapeText(value) { return String(value).replace(/[&<>"']/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[ch])); }
   document.getElementById("sidebarMount").innerHTML = sidebar;

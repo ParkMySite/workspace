@@ -20,11 +20,11 @@
 .required-star { color:#df5a61; }
 .employee-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px 20px; }
 .employee-field { position:relative; min-width:0; border:0; padding:0; margin:0; }
-.employee-field > input:not([type=radio]), .employee-field > textarea { width:100%; min-height:56px; border:1px solid #dce4ef; border-radius:11px; background:#fff; color:#1d2a3b; outline:none; padding:22px 14px 9px; font:inherit; font-size:13px; transition:border-color .18s,box-shadow .18s,background .18s; }
+.employee-field > input:not([type=radio]), .employee-field > textarea { width:100%; min-height:56px; border:1px solid #dce4ef; border-radius:11px; background:#fff; color:#1d2a3b; outline:none; padding:22px 14px 9px; font:inherit; font-size:14px; transition:border-color .18s,box-shadow .18s,background .18s; }
 .employee-field > textarea { resize:vertical; min-height:100px; padding-top:25px; line-height:1.6; }
 .employee-field > input:focus, .employee-field > textarea:focus { border-color:#6e9cff; box-shadow:0 0 0 4px #3978f612; }
-.employee-field > input:focus + label, .employee-field > input:not(:placeholder-shown) + label, .employee-field > textarea:focus + label, .employee-field > textarea:not(:placeholder-shown) + label { top:9px; transform:none; font-size:10px; color:#6d85ad; }
-.employee-field > label { position:absolute; z-index:1; top:18px; left:14px; color:#8390a3; font-size:12px; pointer-events:none; transition:all .16s ease; }
+.employee-field > input:focus + label, .employee-field > input:not(:placeholder-shown) + label, .employee-field > textarea:focus + label, .employee-field > textarea:not(:placeholder-shown) + label { top:-9px; transform:none; font-size:14px;font-weight: 800;background: #fff; color:var(--blue); }
+.employee-field > label { position:absolute; z-index:1; top:18px; left:14px; color:#8390a3; font-size:14px; pointer-events:none; transition:all .16s ease; }
 .employee-field-wide { grid-column:1 / -1; }
 .employee-gender-field { min-height:56px; }
 .employee-gender-field legend { padding:0; margin:0 0 10px; color:#68778c; font-size:11px; font-weight:700; }

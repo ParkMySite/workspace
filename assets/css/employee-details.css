@@ -110,7 +110,7 @@
 .employee-confirm-modal h2 { margin-bottom:8px; }
 .employee-confirm-modal p { color:#7b8798; font-size:12px; line-height:1.7; }
 .employee-modal-actions-center { justify-content:center; }
-.employee-toast { position:fixed; z-index:1100; right:24px; bottom:24px; display:flex; align-items:center; gap:13px; width:min(420px,calc(100vw - 30px)); padding:15px 15px; border:1px solid #d8f0e6; border-radius:13px; background:#fff; box-shadow:0 18px 55px #18395a20; animation:employeeToastIn .3s cubic-bezier(.2,.8,.2,1); }
+.employee-toast { position:fixed; z-index:1100; right:24px; top:24px; display:flex; align-items:center; gap:13px; width:min(420px,calc(100vw - 30px)); padding:15px 15px; border:1px solid #d8f0e6; border-radius:13px; background:#fff; box-shadow:0 18px 55px #18395a20; animation:employeeToastIn .3s cubic-bezier(.2,.8,.2,1); }
 .toast-check { width:39px; height:39px; flex:0 0 39px; display:grid; place-items:center; border-radius:50%; background:#e7f7f1; }
 .toast-check svg { width:30px; height:30px; stroke:#159a72; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
 .toast-check circle { stroke-dasharray:151; stroke-dashoffset:151; animation:employeeCircle .45s ease forwards; }

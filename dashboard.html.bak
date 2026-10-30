@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10213b">
+  <title>Dashboard | Office Portal</title>
+  <link rel="stylesheet" href="./assets/css/main.css">
+  <link rel="stylesheet" href="./assets/css/dashboard-employees.css">
+</head>
+<body class="app-page">
+  <div class="app-layout">
+    <div id="sidebarMount"></div>
+    <div class="app-main">
+      <div id="headerMount"></div>
+      <main class="page-content">
+        <section class="welcome-row">
+          <div>
+            <p class="eyebrow accent">OVERVIEW</p>
+            <h1>Good day, <span id="welcomeName">colleague</span>.</h1>
+            <p class="muted">Here’s what’s happening across your workspace.</p>
+          </div>
+          <div class="date-chip"><span class="date-icon">◷</span><span id="todayDate">Today</span></div>
+        </section>
+
+        <section class="stat-grid" aria-label="Summary">
+          <article class="stat-card">
+            <div class="stat-top"><span class="stat-icon blue">▦</span><span class="stat-trend">Workspace</span></div>
+            <p class="stat-label">Available modules</p><h2>10</h2><p class="stat-foot">Tools at your fingertips</p>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span class="stat-icon green">✓</span><span class="stat-trend">System</span></div>
+            <p class="stat-label">Employee data connection</p><h2 id="employeeConnectionStatus" class="live-status-text">Checking…</h2>
+            <p class="stat-foot"><span id="employeeConnectionDot" class="status-dot"></span> <span id="employeeConnectionMessage">Connecting to the report API</span></p>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span class="stat-icon violet">⌁</span><span class="stat-trend">Access</span></div>
+            <p class="stat-label">Signed in as</p><h2 class="role-value" id="roleValue">Staff</h2><p class="stat-foot">Access level from your profile</p>
+          </article>
+        </section>
+
+        <section class="section-heading"><div><h2>Quick access</h2><p class="muted">Open a module to get started.</p></div><span class="section-kicker">YOUR WORKSPACE</span></section>
+        <section class="module-grid">
+          <a class="module-card" href="./pages/cash-stock.html"><div class="module-icon blue">▤</div><div><h3>Cash Stock</h3><p>Manage denomination and stock records.</p></div><span class="module-arrow">↗</span></a>
+          <a class="module-card" href="./pages/network-status.html"><div class="module-icon green">⌁</div><div><h3>Network Status</h3><p>Review links and connectivity updates.</p></div><span class="module-arrow">↗</span></a>
+          <a class="module-card" href="./pages/pension.html"><div class="module-icon orange">▣</div><div><h3>Pension Services</h3><p>Access pension-related workflows.</p></div><span class="module-arrow">↗</span></a>
+          <a class="module-card" href="./pages/reports.html"><div class="module-icon violet">▥</div><div><h3>Reports</h3><p>View summaries and operational reports.</p></div><span class="module-arrow">↗</span></a>
+          <a class="module-card" href="./pages/employee-details.html"><div class="module-icon blue">♙</div><div><h3>Employee Details</h3><p>Add, view, edit and manage employee records.</p></div><span class="module-arrow">↗</span></a>
+          <a class="module-card" href="./pages/employee-report.html"><div class="module-icon violet">▤</div><div><h3>Employee Reports</h3><p>Filter employee records and download CSV or PDF.</p></div><span class="module-arrow">↗</span></a>
+        </section>
+
+        <section class="employee-live-grid" aria-label="Live employee data">
+          <article class="content-card employee-metrics-card">
+            <div class="card-heading">
+              <div><h2>Employee data overview</h2><p class="muted">Live summary from the Employees sheet</p></div>
+              <span class="live-pill"><span class="live-indicator"></span> LIVE</span>
+            </div>
+            <div class="employee-metric-grid">
+              <div class="employee-metric"><span>Total employees</span><strong id="employeeTotal">—</strong></div>
+              <div class="employee-metric"><span>Male</span><strong id="employeeMale">—</strong></div>
+              <div class="employee-metric"><span>Female</span><strong id="employeeFemale">—</strong></div>
+              <div class="employee-metric"><span>Other / unspecified</span><strong id="employeeOther">—</strong></div>
+            </div>
+            <div class="employee-live-footer">
+              <span id="employeeLastUpdated">Waiting for first update…</span>
+              <button type="button" id="refreshEmployeeData" class="refresh-button">↻ Refresh now</button>
+            </div>
+            <p id="employeeLiveError" class="employee-live-error" role="status" hidden></p>
+          </article>
+
+          <article class="content-card employee-preview-card">
+            <div class="card-heading"><div><h2>Employee directory preview</h2><p class="muted">A small preview of the employee list</p></div><a class="text-link" href="./pages/employee-report.html">Open report ↗</a></div>
+            <div class="employee-preview-table-wrap">
+              <table class="employee-preview-table">
+                <thead><tr><th>Employee name</th><th>Gender</th><th>Birth year</th></tr></thead>
+                <tbody id="employeePreviewBody"><tr><td colspan="3" class="employee-empty">Loading employee data…</td></tr></tbody>
+              </table>
+            </div>
+            <p class="employee-preview-note">Names are shown alphabetically. For full details, use Employee Reports.</p>
+          </article>
+        </section>
+
+        <section class="bottom-grid">
+          <article class="content-card"><div class="card-heading"><div><h2>Recent activity</h2><p class="muted">Workspace information</p></div><span class="live-pill">PORTAL</span></div>
+            <div class="activity-row"><span class="activity-symbol blue">♙</span><div><strong>Employee Details module</strong><p>Add and maintain employee records from the Employee Details page.</p></div><a class="activity-link" href="./pages/employee-details.html">Open</a></div>
+            <div class="activity-row"><span class="activity-symbol violet">▤</span><div><strong>Employee Reports module</strong><p>Generate name-, birth-year- and gender-based reports.</p></div><a class="activity-link" href="./pages/employee-report.html">Open</a></div>
+            <div class="activity-row"><span class="activity-symbol green">↻</span><div><strong>Automatic refresh</strong><p>Employee metrics refresh automatically every 60 seconds while this dashboard is open.</p></div><time>Live</time></div>
+          </article>
+          <article class="content-card status-card"><div class="card-heading"><div><h2>System overview</h2><p class="muted">Portal components</p></div><span class="status-dot"></span></div>
+            <div class="status-line"><span>Frontend</span><span class="status-value"><i class="mini-dot green-dot"></i> GitHub Pages</span></div>
+            <div class="status-line"><span>Employee data</span><span class="status-value">Google Sheets</span></div>
+            <div class="status-line"><span>Report API</span><span class="status-value" id="reportApiStatus">Waiting</span></div>
+            <div class="notice"><span>ⓘ</span><p>Live status reflects whether the employee report API responded successfully. It is not a complete security or infrastructure health check.</p></div>
+          </article>
+        </section>
+      </main>
+      <div id="footerMount"></div>
+    </div>
+  </div>
+  <script src="./assets/js/config.js"></script>
+  <script src="./assets/js/config/menu.js"></script>
+  <script src="./assets/js/core/auth.js"></script>
+  <script src="./assets/js/core/utils.js"></script>
+  <script src="./assets/js/components/layout.js"></script>
+  <script src="./assets/js/pages/dashboard.js"></script>
+  <script src="./assets/js/pages/employee-dashboard-live.js"></script>
+</body>
+</html>

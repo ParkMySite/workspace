@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10213b">
+  <title>Sign in | Treasury Portal</title>
+  <link rel="stylesheet" href="./assets/css/main.css">
+</head>
+<body class="login-page">
+  <main class="login-shell">
+    <section class="login-brand">
+      <div class="brand-mark">T</div>
+      <p class="eyebrow">DEPARTMENT OF TREASURIES</p>
+      <h1>One workspace.<br><span>Better operations.</span></h1>
+      <p class="brand-copy">A central workspace for treasury services, operational tools and network status.</p>
+      <div class="brand-bottom"><span class="status-dot"></span> Secure workspace access</div>
+    </section>
+    <section class="login-panel">
+      <div class="mobile-brand"><div class="brand-mark">T</div><span>Treasury Portal</span></div>
+      <div class="login-card">
+        <p class="eyebrow accent">WELCOME BACK</p>
+        <h2>Sign in to your account</h2>
+        <p class="muted">Enter your work credentials to continue.</p>
+        <form id="loginForm">
+          <label for="username">User ID</label>
+          <input id="username" name="username" autocomplete="username" placeholder="Enter your user ID" required>
+          <div class="password-label"><label for="password">Password</label><button class="text-button" type="button" id="togglePassword">Show</button></div>
+          <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required>
+          <p id="loginMessage" class="form-message" role="status"></p>
+          <button class="primary-button full-width" id="loginButton" type="submit">Sign in <span aria-hidden="true">→</span></button>
+        </form>
+        <p class="login-help">Need access? Contact your system administrator.</p>
+      </div>
+      <footer class="login-footer">© <span data-year></span> Department of Treasuries <span>•</span> Internal portal</footer>
+    </section>
+  </main>
+  <script src="./assets/js/config.js"></script>
+  <script src="./assets/js/core/api.js"></script>
+  <script src="./assets/js/pages/login.js"></script>
+  <script src="./assets/js/core/utils.js"></script>
+</body>
+</html>

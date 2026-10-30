@@ -1,0 +1,382 @@
+(() => {
+  "use strict";
+
+  // Set the deployed Apps Script Web App URL in assets/js/config.js as:
+  // window.TREASURY_CONFIG = { employeeApiUrl: "https://script.google.com/macros/s/DEPLOYMENT_ID/exec" };
+  const API_URL = window.TREASURY_CONFIG?.employeeApiUrl || "";
+  const $ = (id) => document.getElementById(id);
+  const form = $("employeeForm");
+  const formFields = ["employeeName", "dateOfBirth", "employeeAddress", "bloodGroup", "contactNumber", "emailId"];
+  const fieldToKey = {
+    employeeName: "name", dateOfBirth: "dob", employeeAddress: "address",
+    bloodGroup: "bloodGroup", contactNumber: "contact", emailId: "email"
+  };
+  let employees = [];
+  let currentPage = 1;
+  let pageSize = Number($("pageSize").value);
+  let sortKey = "name";
+  let sortDirection = "asc";
+  let pendingDeleteId = null;
+  let toastTimer = null;
+  let lastFocusedElement = null;
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    })[char]);
+  }
+
+  function showToast(title, message) {
+    $("toastTitle").textContent = title;
+    $("toastMessage").textContent = message;
+    $("employeeToast").hidden = false;
+    const icon = $("employeeToast").querySelector("svg");
+    if (icon) { icon.style.animation = "none"; void icon.getBoundingClientRect(); icon.style.animation = ""; }
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { $("employeeToast").hidden = true; }, 4800);
+  }
+
+  function openModal(id) {
+    lastFocusedElement = document.activeElement;
+    $(id).hidden = false;
+    document.body.style.overflow = "hidden";
+    const focusTarget = $(id).querySelector("button");
+    if (focusTarget) focusTarget.focus();
+  }
+  function closeModal(id) {
+    $(id).hidden = true;
+    if (!$("previewModal").hidden && id !== "previewModal") return;
+    if (!$("confirmModal").hidden) return;
+    document.body.style.overflow = "";
+    if (lastFocusedElement?.focus) lastFocusedElement.focus();
+  }
+
+  function switchTab(tab) {
+    const add = tab === "add";
+    $("addTab").classList.toggle("active", add);
+    $("editTab").classList.toggle("active", !add);
+    $("addTab").setAttribute("aria-selected", String(add));
+    $("editTab").setAttribute("aria-selected", String(!add));
+    $("addPanel").hidden = !add;
+    $("editPanel").hidden = add;
+    if (!add) renderTable();
+  }
+
+  function getFormData() {
+    const selectedGender = form.querySelector('input[name="gender"]:checked');
+    return {
+      id: $("employeeId").value.trim(),
+      name: $("employeeName").value.trim(),
+      dob: $("dateOfBirth").value,
+      gender: selectedGender ? selectedGender.value : "",
+      address: $("employeeAddress").value.trim(),
+      bloodGroup: $("bloodGroup").value.trim(),
+      contact: $("contactNumber").value.trim(),
+      email: $("emailId").value.trim()
+    };
+  }
+
+  function setFieldError(name, message) {
+    const error = document.querySelector(`[data-error-for="${name}"]`);
+    if (error) error.textContent = message || "";
+    const field = error?.closest(".employee-field");
+    if (field) field.classList.toggle("invalid", Boolean(message));
+  }
+  function clearErrors() {
+    [...document.querySelectorAll(".field-error")].forEach((el) => { el.textContent = ""; });
+    [...document.querySelectorAll(".employee-field.invalid")].forEach((el) => el.classList.remove("invalid"));
+  }
+
+  function validateForm() {
+    clearErrors();
+    const data = getFormData();
+    let valid = true;
+    const fail = (name, message) => { setFieldError(name, message); valid = false; };
+    if (!data.name) fail("employeeName", "Enter the employee name.");
+    else if (data.name.length < 2) fail("employeeName", "Name must contain at least 2 characters.");
+    if (!data.dob) fail("dateOfBirth", "Select the date of birth.");
+    else if (data.dob > new Date().toISOString().slice(0, 10)) fail("dateOfBirth", "Date of birth cannot be in the future.");
+    if (!data.gender) fail("gender", "Select a gender.");
+    if (!data.address) fail("employeeAddress", "Enter the employee address.");
+    const digits = data.contact.replace(/\D/g, "");
+    if (!data.contact) fail("contactNumber", "Enter a contact number.");
+    else if (digits.length < 7 || digits.length > 15) fail("contactNumber", "Enter a valid contact number (7–15 digits).");
+    if (!data.email) fail("emailId", "Enter the email address.");
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data.email)) fail("emailId", "Enter a valid email address.");
+    if (!valid) {
+      const first = document.querySelector(".employee-field.invalid input, .employee-field.invalid textarea");
+      first?.focus();
+    }
+    return valid;
+  }
+
+  function formatDate(iso) {
+    if (!iso) return "—";
+    const parts = iso.split("-");
+    return parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : iso;
+  }
+
+  function previewHtml(data) {
+    const items = [
+      ["Employee name", data.name, false], ["Date of birth", formatDate(data.dob), false],
+      ["Gender", data.gender, false], ["Blood group", data.bloodGroup || "Not provided", false],
+      ["Contact number", data.contact, false], ["Email ID", data.email, false],
+      ["Address", data.address, true]
+    ];
+    return items.map(([label, value, wide]) => `<div class="preview-item${wide ? " preview-item-wide" : ""}">
+      <div class="preview-label">${escapeHtml(label)}</div><div class="preview-value">${escapeHtml(value || "—")}</div></div>`).join("");
+  }
+
+  function openPreview() {
+    if (!validateForm()) {
+      showToast("Please check the form", "Some fields need your attention before previewing.");
+      return;
+    }
+    $("previewRecord").innerHTML = previewHtml(getFormData());
+    openModal("previewModal");
+  }
+
+  function clearForm() {
+    form.reset();
+    $("employeeId").value = "";
+    $("formHeading").textContent = "Add employee";
+    $("submitBtnText").textContent = "Save employee";
+    $("previewSaveBtn").textContent = "Looks good — save";
+    clearErrors();
+  }
+
+  async function apiRequest(action, payload = {}) {
+    if (!API_URL) throw new Error("The Apps Script API URL has not been configured. Add employeeApiUrl to assets/js/config.js.");
+    const url = new URL(API_URL);
+    url.searchParams.set("action", action);
+    const response = await fetch(url.toString(), {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+      redirect: "follow"
+    });
+    if (!response.ok) throw new Error(`Server returned HTTP ${response.status}.`);
+    const result = await response.json();
+    if (!result || result.ok !== true) throw new Error(result?.error || "The server could not complete the request.");
+    return result;
+  }
+
+  async function loadEmployees(showFailure = true) {
+    $("employeeTableBody").innerHTML = `<tr><td colspan="7" class="employee-loading-cell">Loading employee records…</td></tr>`;
+    $("employeeEmptyState").hidden = true;
+    try {
+      const result = await apiRequest("list");
+      employees = Array.isArray(result.data) ? result.data : [];
+      renderTable();
+      updateCounts();
+    } catch (error) {
+      employees = [];
+      renderTable();
+      if (showFailure) showToast("Unable to load records", error.message);
+    }
+  }
+
+  function updateCounts() {
+    const count = employees.length;
+    $("employeeCount").textContent = `${count} employee${count === 1 ? "" : "s"}`;
+    $("tabEmployeeCount").textContent = String(count);
+  }
+
+  function filteredEmployees() {
+    const query = $("employeeSearch").value.trim().toLocaleLowerCase();
+    let rows = employees.filter((e) => [
+      e.name, e.dob, e.gender, e.address, e.bloodGroup, e.contact, e.email
+    ].some((value) => String(value ?? "").toLocaleLowerCase().includes(query)));
+    rows.sort((a, b) => {
+      const av = String(a[sortKey] ?? "").toLocaleLowerCase();
+      const bv = String(b[sortKey] ?? "").toLocaleLowerCase();
+      const result = sortKey === "dob" ? av.localeCompare(bv) : av.localeCompare(bv, undefined, { numeric: true, sensitivity: "base" });
+      return result * (sortDirection === "asc" ? 1 : -1);
+    });
+    return rows;
+  }
+
+  function renderTable() {
+    const rows = filteredEmployees();
+    const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
+    currentPage = Math.min(currentPage, totalPages);
+    const startIndex = (currentPage - 1) * pageSize;
+    const visible = rows.slice(startIndex, startIndex + pageSize);
+    $("employeeTableBody").innerHTML = visible.map((e) => `<tr>
+      <td class="employee-name-cell">${escapeHtml(e.name)}<small>Employee ID: ${escapeHtml(e.id)}</small></td>
+      <td>${escapeHtml(formatDate(e.dob))}</td>
+      <td>${escapeHtml(e.gender || "—")}</td>
+      <td>${escapeHtml(e.bloodGroup || "—")}</td>
+      <td>${escapeHtml(e.contact || "—")}</td>
+      <td class="employee-email-cell">${escapeHtml(e.email || "—")}</td>
+      <td><div class="employee-row-actions">
+        <button type="button" class="employee-icon-btn" data-action="edit" data-id="${escapeHtml(e.id)}" title="Edit employee" aria-label="Edit ${escapeHtml(e.name)}">✎</button>
+        <button type="button" class="employee-icon-btn delete" data-action="delete" data-id="${escapeHtml(e.id)}" title="Delete employee" aria-label="Delete ${escapeHtml(e.name)}">⌫</button>
+      </div></td></tr>`).join("");
+    const empty = rows.length === 0;
+    $("employeeEmptyState").hidden = !empty;
+    $("employeeTableBody").parentElement.style.display = empty ? "none" : "table";
+    if (empty) {
+      const searching = Boolean($("employeeSearch").value.trim());
+      $("emptyStateTitle").textContent = searching ? "No matching employees" : "No employee records yet";
+      $("emptyStateMessage").textContent = searching ? "Try a different search term." : "Add an employee using the Add details tab.";
+      $("emptyAddBtn").hidden = searching;
+    }
+    $("tableSummary").textContent = `Showing ${rows.length ? startIndex + 1 : 0}–${Math.min(startIndex + pageSize, rows.length)} of ${rows.length}`;
+    $("employeePagination").innerHTML = "";
+    const addPageButton = (label, page, disabled, active = false, aria = label) => {
+      const btn = document.createElement("button");
+      btn.type = "button"; btn.className = `employee-page-btn${active ? " active" : ""}`;
+      btn.textContent = label; btn.disabled = disabled; btn.setAttribute("aria-label", aria);
+      if (active) btn.setAttribute("aria-current", "page");
+      btn.addEventListener("click", () => { currentPage = page; renderTable(); });
+      $("employeePagination").appendChild(btn);
+    };
+    addPageButton("‹", Math.max(1, currentPage - 1), currentPage === 1, false, "Previous page");
+    for (let p = 1; p <= totalPages; p++) {
+      if (totalPages > 7 && p > 2 && p < totalPages - 1 && Math.abs(p - currentPage) > 1) {
+        if (p === 3 || p === totalPages - 2) {
+          const dots = document.createElement("span"); dots.textContent = "…"; dots.className = "pagination-dots";
+          $("employeePagination").appendChild(dots);
+        }
+        continue;
+      }
+      addPageButton(String(p), p, false, p === currentPage, `Page ${p}`);
+    }
+    addPageButton("›", Math.min(totalPages, currentPage + 1), currentPage === totalPages, false, "Next page");
+    document.querySelectorAll(".sort-button").forEach((button) => {
+      const active = button.dataset.sort === sortKey;
+      button.setAttribute("aria-sort", active ? (sortDirection === "asc" ? "ascending" : "descending") : "none");
+      button.querySelector(".sort-mark").textContent = active ? (sortDirection === "asc" ? "↑" : "↓") : "↕";
+    });
+    updateCounts();
+  }
+
+  function editEmployee(id) {
+    const employee = employees.find((e) => String(e.id) === String(id));
+    if (!employee) return;
+    clearForm();
+    $("employeeId").value = employee.id || "";
+    $("employeeName").value = employee.name || "";
+    $("dateOfBirth").value = employee.dob || "";
+    $("employeeAddress").value = employee.address || "";
+    $("bloodGroup").value = employee.bloodGroup || "";
+    $("contactNumber").value = employee.contact || "";
+    $("emailId").value = employee.email || "";
+    const radio = form.querySelector(`input[name="gender"][value="${CSS.escape(employee.gender || "")}"]`);
+    if (radio) radio.checked = true;
+    $("formHeading").textContent = "Edit employee";
+    $("submitBtnText").textContent = "Update employee";
+    $("previewSaveBtn").textContent = "Looks good — update";
+    switchTab("add");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    $("employeeName").focus({ preventScroll: true });
+  }
+
+  async function saveEmployee() {
+    if (!validateForm()) {
+      showToast("Please check the form", "Correct the highlighted fields and try again.");
+      return;
+    }
+    const data = getFormData();
+    const editing = Boolean(data.id);
+    $("submitBtn").disabled = true;
+    $("submitBtnText").textContent = editing ? "Updating…" : "Saving…";
+    try {
+      const result = await apiRequest(editing ? "update" : "create", data);
+      closeModal("previewModal");
+      clearForm();
+      await loadEmployees(false);
+      switchTab("edit");
+      showToast(editing ? "Employee updated" : "Employee added", result.message || (editing ? "Changes saved successfully." : "New employee record saved successfully."));
+    } catch (error) {
+      showToast("Save failed", error.message);
+    } finally {
+      $("submitBtn").disabled = false;
+      $("submitBtnText").textContent = $("employeeId").value ? "Update employee" : "Save employee";
+    }
+  }
+
+  function askDelete(id) {
+    const employee = employees.find((e) => String(e.id) === String(id));
+    if (!employee) return;
+    pendingDeleteId = id;
+    $("confirmMessage").textContent = `Delete the record for ${employee.name}? This action cannot be undone.`;
+    openModal("confirmModal");
+  }
+
+  async function deleteEmployee() {
+    if (!pendingDeleteId) return;
+    $("confirmDeleteBtn").disabled = true;
+    try {
+      const result = await apiRequest("delete", { id: pendingDeleteId });
+      closeModal("confirmModal");
+      pendingDeleteId = null;
+      await loadEmployees(false);
+      showToast("Employee deleted", result.message || "The employee record was deleted.");
+    } catch (error) {
+      showToast("Delete failed", error.message);
+    } finally {
+      $("confirmDeleteBtn").disabled = false;
+    }
+  }
+
+  form.addEventListener("submit", (event) => { event.preventDefault(); saveEmployee(); });
+  $("previewBtn").addEventListener("click", openPreview);
+  $("previewSaveBtn").addEventListener("click", saveEmployee);
+  $("cancelFormBtn").addEventListener("click", () => {
+    const hasInput = getFormData();
+    const dirty = Boolean(hasInput.name || hasInput.dob || hasInput.address || hasInput.contact || hasInput.email || hasInput.id);
+    clearForm();
+    showToast("Form cleared", dirty ? "Unsaved entries were cancelled." : "The form is ready for a new employee.");
+  });
+  $("addTab").addEventListener("click", () => switchTab("add"));
+  $("editTab").addEventListener("click", () => { switchTab("edit"); loadEmployees(false); });
+  $("emptyAddBtn").addEventListener("click", () => switchTab("add"));
+  $("employeeSearch").addEventListener("input", () => { currentPage = 1; renderTable(); });
+  $("pageSize").addEventListener("change", () => { pageSize = Number($("pageSize").value); currentPage = 1; renderTable(); });
+  document.querySelectorAll(".sort-button").forEach((button) => button.addEventListener("click", () => {
+    const next = button.dataset.sort;
+    if (sortKey === next) sortDirection = sortDirection === "asc" ? "desc" : "asc";
+    else { sortKey = next; sortDirection = "asc"; }
+    renderTable();
+  }));
+  $("employeeTableBody").addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-action]");
+    if (!button) return;
+    if (button.dataset.action === "edit") editEmployee(button.dataset.id);
+    if (button.dataset.action === "delete") askDelete(button.dataset.id);
+  });
+  document.querySelectorAll("[data-close-modal]").forEach((button) => button.addEventListener("click", () => closeModal(button.dataset.closeModal)));
+  document.querySelectorAll(".employee-modal-backdrop").forEach((backdrop) => backdrop.addEventListener("click", (event) => {
+    if (event.target === backdrop) closeModal(backdrop.id);
+  }));
+  $("confirmDeleteBtn").addEventListener("click", deleteEmployee);
+  $("closeToastBtn").addEventListener("click", () => { clearTimeout(toastTimer); $("employeeToast").hidden = true; });
+  $("printPreviewBtn").addEventListener("click", () => {
+    const content = $("previewRecord").innerHTML;
+    const win = window.open("", "_blank", "width=800,height=700");
+    if (!win) { showToast("Pop-up blocked", "Allow pop-ups to print the preview."); return; }
+    win.document.write(`<!doctype html><html><head><title>Employee details preview</title><meta charset="utf-8"><style>
+      body{font:14px Arial,sans-serif;color:#243247;padding:32px}h1{font-size:22px;margin-bottom:8px}
+      .intro{color:#66758a;margin-bottom:24px}.grid{display:grid;grid-template-columns:1fr 1fr;border:1px solid #dfe5ed;border-radius:8px;overflow:hidden}
+      .item{padding:13px;border-bottom:1px solid #e9edf2}.item:nth-child(odd){background:#f8faff}.wide{grid-column:1/-1}
+      .label{font-size:10px;letter-spacing:1px;color:#78869b;text-transform:uppercase;margin-bottom:6px;font-weight:bold}
+      .value{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6}
+      @media print{body{padding:0}}
+    </style></head><body><h1>Employee details</h1><p class="intro">Preview generated from the Treasury Portal.</p><div class="grid">${content.replaceAll('preview-item-wide','wide').replaceAll('preview-item','item').replaceAll('preview-label','label').replaceAll('preview-value','value')}</div><script>window.onload=()=>{window.print();};<\/script></body></html>`);
+    win.document.close();
+  });
+  document.addEventListener("keydown", (event) => {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+      event.preventDefault(); switchTab("edit"); $("employeeSearch").focus();
+    }
+    if (event.key === "Escape") {
+      if (!$("previewModal").hidden) closeModal("previewModal");
+      if (!$("confirmModal").hidden) closeModal("confirmModal");
+    }
+  });
+
+  // The backend is deliberately not replaced with localStorage: employee data must persist centrally.
+  loadEmployees();
+})();

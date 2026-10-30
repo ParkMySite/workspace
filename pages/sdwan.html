@@ -1,0 +1,73 @@
+<!doctype html><html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Network Status | Treasury Portal</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body class="app-page">
+<div class="app-layout"><div id="sidebarMount">
+</div>
+<div class="app-main">
+<div id="headerMount"></div>
+<main class="page-content"><p class="eyebrow accent">MODULE</p>
+
+<h1>Network Status</h1>
+<p class="muted">Connect your NOC monitoring or link-status data here.</p>
+
+<article class="content-card placeholder-card">
+<div class="module-icon green">⌁</div>
+
+<h2>Network operations</h2>
+  <div class="main-container">
+        <section class="card">
+          <div class="card-body">
+            <div class="filter-card">
+              <label for="treasurySelect" class="filter-label">Select Treasury</label>
+              <div class="filter-controls">
+                <select id="treasurySelect" class="form-select" aria-label="Select treasury">
+                  <option value="">Loading treasuries...</option>
+                </select>
+                <button class="btn btn-primary" id="viewDetailsBtn" type="button">
+                  <i class="bi bi-search"></i> View Details
+                </button>
+              </div>
+            </div>
+
+            <div id="sdwanAlert" aria-live="polite"></div>
+
+            <h2 class="section-title">WAN 1 (BSNL MPLS) Configuration Details</h2>
+            <div id="mplsConfigTableContainer" class="table-container mb-4"><div class="empty-state"><i class="bi bi-cloud"></i><h6>Select a treasury and click View Details.</h6></div></div>
+
+            <h2 class="section-title">WAN 2 Configuration Details</h2>
+            <div id="wan2ConfigTableContainer" class="table-container mb-4"><div class="empty-state"><i class="bi bi-hdd-network"></i><h6>Select a treasury and click View Details.</h6></div></div>
+
+            <h2 class="section-title">FatPipe Device Configuration Details</h2>
+            <div id="installationTableContainer" class="table-container mb-4"><div class="empty-state"><i class="bi bi-server"></i><h6>Select a treasury and click View Details.</h6></div></div>
+
+            <h2 class="section-title">MPLS Contact Details</h2>
+            <div id="treasuryWorkingTableContainer" class="table-container mb-4"><div class="empty-state"><i class="bi bi-telephone"></i><h6>Select a treasury and click View Details.</h6></div></div>
+
+            <h2 class="section-title">Admin Contact Details</h2>
+            <div id="adminTableContainer" class="table-container"><div class="empty-state"><i class="bi bi-people"></i><h6>Select a treasury and click View Details.</h6></div></div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <div id="footerMount"></div>
+  </div>
+
+
+
+</article>
+</main>
+<div id="footerMount">
+</div>
+</div>
+</div>
+<script src="../assets/js/config.js">
+<script src="../assets/js/core/auth.js"></script>
+<script src="../assets/js/core/utils.js"></script>
+<script src="../assets/js/config/menu.js" defer></script>
+<script src="../assets/js/components/layout.js" defer></script>
+</body></html>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Employee Report | Treasury Portal</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/employee-report.css">
+</head>
+<body class="app-page">
+  <div class="app-layout">
+    <div id="sidebarMount"></div>
+    <div class="app-main">
+      <div id="headerMount"></div>
+      <main class="page-content report-page">
+        <div class="report-heading">
+          <div>
+            <p class="eyebrow accent">ADMINISTRATION / STAFF RECORDS</p>
+            <h1>Employee Report</h1>
+            <p class="muted">Filter employee records by name, birth year or gender. Leave all filters blank to view every employee.</p>
+          </div>
+          <div class="report-count"><span class="count-dot"></span><span id="resultCount">Ready to search</span></div>
+        </div>
+
+        <section class="report-card content-card">
+          <div class="report-card-title">
+            <div><span class="report-icon">⌕</span><div><h2>Report filters</h2><p class="muted">Use one filter or combine multiple filters.</p></div></div>
+          </div>
+          <form id="reportForm" class="report-filters">
+            <label class="report-field"><span>Employee name</span><input id="filterName" type="search" placeholder="Enter full or partial name" autocomplete="off"></label>
+            <label class="report-field"><span>Year of birth</span><input id="filterYear" type="number" inputmode="numeric" min="1900" max="2100" placeholder="e.g. 1989"></label>
+            <label class="report-field"><span>Gender</span><select id="filterGender"><option value="">All genders</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></label>
+            <div class="report-filter-actions"><button class="report-btn report-btn-primary" type="submit" id="searchBtn">Generate report</button><button class="report-btn report-btn-secondary" type="button" id="clearBtn">Clear filters</button></div>
+          </form>
+          <p class="report-hint">Results are sorted by employee name (A–Z). Click a column heading to change the sort order.</p>
+        </section>
+
+        <section class="report-card content-card results-card">
+          <div class="results-toolbar"><div><h2>Report results</h2><p class="muted" id="resultsSubtitle">Generate a report to display matching records.</p></div><div class="export-actions"><button class="report-btn report-btn-export" id="csvBtn" type="button" disabled>↓ Download CSV</button><button class="report-btn report-btn-export" id="pdfBtn" type="button" disabled>↓ Download PDF</button></div></div>
+          <div id="statusMessage" class="report-status" role="status" aria-live="polite">Enter any filter or generate the report without filters to list all employees.</div>
+          <div class="report-table-wrap" id="tableWrap" hidden>
+            <table class="report-table"><thead><tr>
+              <th><button type="button" data-sort="name">Employee Name <span>↕</span></button></th>
+              <th><button type="button" data-sort="dob">Date of Birth <span>↕</span></button></th>
+              <th><button type="button" data-sort="year">Birth Year <span>↕</span></button></th>
+              <th><button type="button" data-sort="gender">Gender <span>↕</span></button></th>
+              <th>Address</th><th>Blood Group</th><th>Contact Number</th><th>Email ID</th>
+            </tr></thead><tbody id="resultsBody"></tbody></table>
+          </div>
+          <div class="report-empty" id="emptyState" hidden><span>⌕</span><strong>No matching employees found</strong><p>Try changing or clearing the filters.</p></div>
+        </section>
+        <p class="report-footnote">Report data is retrieved from the Employees sheet. CSV and PDF files are generated in your browser from the displayed results.</p>
+      </main>
+      <div id="footerMount"></div>
+    </div>
+  </div>
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/core/auth.js"></script>
+  <script src="../assets/js/core/utils.js"></script>
+  <script src="../assets/js/config/menu.js" defer></script>
+  <script src="../assets/js/components/layout.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js" defer></script>
+  <script src="../assets/js/pages/employee-report.js" defer></script>
+</body>
+</html>

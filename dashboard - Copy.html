@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10213b">
+  <title>Dashboard | Office Portal</title>
+  <link rel="stylesheet" href="./assets/css/main.css">
+  
+</head>
+<body class="app-page">
+  <div class="app-layout">
+    <div id="sidebarMount"></div>
+    <div class="app-main">
+      <div id="headerMount"></div>
+      <main class="page-content">
+        <section class="welcome-row">
+          <div><p class="eyebrow accent">OVERVIEW</p><h1>Good day, <span id="welcomeName">colleague</span>.</h1><p class="muted">Here’s what’s happening across your workspace.</p></div>
+          <div class="date-chip"><span class="date-icon">◷</span><span id="todayDate">Today</span></div>
+        </section>
+        <section class="stat-grid" aria-label="Summary">
+          <article class="stat-card"><div class="stat-top"><span class="stat-icon blue">▦</span><span class="stat-trend">Workspace</span></div><p class="stat-label">Available modules</p><h2>08</h2><p class="stat-foot">Tools at your fingertips</p></article>
+          <article class="stat-card"><div class="stat-top"><span class="stat-icon green">✓</span><span class="stat-trend">System</span></div><p class="stat-label">Portal status</p><h2>Operational</h2><p class="stat-foot"><span class="status-dot"></span> Demo status — connect live data</p></article>
+          <article class="stat-card"><div class="stat-top"><span class="stat-icon violet">⌁</span><span class="stat-trend">Access</span></div><p class="stat-label">Signed in as</p><h2 class="role-value" id="roleValue">Staff</h2><p class="stat-foot">Access level from your profile</p></article>
+        </section>
+        <section class="section-heading"><div><h2>Quick access</h2><p class="muted">Open a module to get started.</p></div><span class="section-kicker">YOUR WORKSPACE</span></section>
+        <section class="module-grid">
+          <a class="module-card" href="./pages/cash-stock.html"><div class="module-icon blue">▤</div><div><h3>Cash Stock</h3><p>Manage denomination and stock records.</p></div><span class="module-arrow">↗</span></a>
+          <a class="module-card" href="./pages/network-status.html"><div class="module-icon green">⌁</div><div><h3>Network Status</h3><p>Review links and connectivity updates.</p></div><span class="module-arrow">↗</span></a>
+          <a class="module-card" href="./pages/pension.html"><div class="module-icon orange">▣</div><div><h3>Pension Services</h3><p>Access pension-related workflows.</p></div><span class="module-arrow">↗</span></a>
+          <a class="module-card" href="./pages/reports.html"><div class="module-icon violet">▥</div><div><h3>Reports</h3><p>View summaries and operational reports.</p></div><span class="module-arrow">↗</span></a>
+        </section>
+        <section class="bottom-grid">
+          <article class="content-card"><div class="card-heading"><div><h2>Recent activity</h2><p class="muted">A sample activity feed</p></div><span class="live-pill">DEMO</span></div>
+            <div class="activity-row"><span class="activity-symbol blue">↗</span><div><strong>Portal workspace opened</strong><p>Dashboard modules are ready to configure.</p></div><time>Just now</time></div>
+            <div class="activity-row"><span class="activity-symbol green">✓</span><div><strong>Shared layout loaded</strong><p>Header, navigation and footer initialized.</p></div><time>Today</time></div>
+            <div class="activity-row"><span class="activity-symbol violet">⚙</span><div><strong>Backend connection</strong><p>Connect the Apps Script URL in config.js.</p></div><time>Setup</time></div>
+          </article>
+          <article class="content-card status-card"><div class="card-heading"><div><h2>System overview</h2><p class="muted">Illustrative status only</p></div><span class="status-dot"></span></div>
+            <div class="status-line"><span>Frontend</span><span class="status-value"><i class="mini-dot green-dot"></i> GitHub Pages</span></div>
+            <div class="status-line"><span>Authentication</span><span class="status-value"><i class="mini-dot amber-dot"></i> Configure API</span></div>
+            <div class="status-line"><span>Data source</span><span class="status-value">Google Sheets</span></div>
+            <div class="notice"><span>ⓘ</span><p>Sample metrics are placeholders. Do not treat them as live operational monitoring.</p></div>
+          </article>
+        </section>
+      </main>
+      <div id="footerMount"></div>
+    </div>
+  </div>
+  <script src="./assets/js/config.js"></script>
+  <script src="./assets/js/config/menu.js" ></script>
+  <script src="./assets/js/core/auth.js"></script>
+  <script src="./assets/js/core/utils.js"></script>
+  <script src="./assets/js/components/layout.js"></script>
+  <script src="./assets/js/pages/dashboard.js"></script>
+</body>
+</html>

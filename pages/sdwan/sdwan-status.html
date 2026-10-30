@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SD-WAN / FatPipe Status | Treasury Portal</title>
+
+  <!-- Existing Treasury Portal styles -->
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/css/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/css/select2.min.css">
+  <link rel="stylesheet" href="../assets/css/select2-bootstrap-5-theme.min.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/all-in-one.css">
+
+  <style>
+    .sdwan-page .filter-card{border-radius:12px;padding:20px;margin-bottom:24px;display:flex;flex-wrap:wrap;align-items:center;gap:16px;background:var(--surface,#fff)}
+    .sdwan-page .filter-label{font-weight:700;color:var(--primary,#0f5b9c);white-space:nowrap}
+    .sdwan-page .filter-controls{display:flex;gap:12px;flex:1;min-width:260px}
+    .sdwan-page .filter-controls .select2-container{flex:1;min-width:180px}
+    .sdwan-page .section-title{font-weight:700;font-size:1rem;margin:24px 0 12px;padding:0 0 9px;border-bottom:1px solid var(--border,#dee2e6)}
+    .sdwan-page .table-container{width:100%;overflow-x:auto;border-radius:10px}
+    .sdwan-page .table{margin-bottom:0;font-size:.875rem;vertical-align:middle}
+    .sdwan-page .table th{white-space:nowrap;background:var(--table-head,#f3f6f9)}
+    .sdwan-page .empty-state,.sdwan-page .loading{padding:28px 16px;text-align:center;border:1px dashed var(--border,#ced4da);border-radius:10px;color:var(--muted,#64748b)}
+    .sdwan-page .empty-state .bi{font-size:1.6rem;display:block;margin-bottom:8px}
+    .sdwan-page .loading-spinner{width:28px;height:28px;border:3px solid #dbe4ec;border-top-color:var(--primary,#0f5b9c);border-radius:50%;animation:sdwan-spin .8s linear infinite;margin:0 auto 10px}
+    @keyframes sdwan-spin{to{transform:rotate(360deg)}}
+    .sdwan-page .btn-copy-apikey{background:#e9ecef;border:1px solid #ced4da;color:#1a4b7a;font-size:.7rem;padding:2px 8px;border-radius:30px;margin-left:8px;font-weight:500;cursor:pointer}
+    .sdwan-page .btn-copy-apikey:hover{background:#0f5b9c;color:#fff}
+    .sdwan-page .api-key-wrapper{display:flex;align-items:center;gap:4px;min-width:170px}
+    .sdwan-page .status-badge-working,.sdwan-page .status-badge-other,.sdwan-page .status-badge-linkdown,.sdwan-page .status-badge-notworking,.sdwan-page .status-badge-blank,.sdwan-page .mpls-badge{display:inline-block;padding:4px 8px;border-radius:20px;font-size:.75rem;font-weight:600}
+    .sdwan-page .status-badge-working{background:#dcfce7;color:#166534}.sdwan-page .status-badge-other{background:#fef3c7;color:#92400e}.sdwan-page .status-badge-linkdown{background:#fee2e2;color:#991b1b}.sdwan-page .status-badge-notworking{background:#ffedd5;color:#9a3412}.sdwan-page .status-badge-blank{background:#f1f5f9;color:#475569}
+    .sdwan-page .instance-id-text,.sdwan-page .encap-ip-text,.sdwan-page .gateway-ip,.sdwan-page .lan-pool{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap}
+    @media(max-width:600px){.sdwan-page .filter-controls{flex-direction:column}.sdwan-page .filter-controls .btn{width:100%}}
+  </style>
+</head>
+<body>
+  <!-- Required mount points used by the shared Treasury Portal layout.js -->
+  <div id="sidebarMount"></div>
+  <div class="app-shell">
+    <div id="headerMount"></div>
+    <main class="main-content sdwan-page">
+      <div class="page-header">
+        <div class="page-header-left">
+          <i class="bi bi-hdd-network"></i>
+          <div>
+            <h1>SD-WAN — FatPipe Device &amp; WAN Configuration</h1>
+            <p>View treasury-specific WAN connectivity, FatPipe device, and contact details.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="main-container">
+        <section class="card">
+          <div class="card-body">
+            <div class="filter-card">
+              <label for="treasurySelect" class="filter-label">Select Treasury</label>
+              <div class="filter-controls">
+                <select id="treasurySelect" class="form-select" aria-label="Select treasury">
+                  <option value="">Loading treasuries...</option>
+                </select>
+                <button class="btn btn-primary" id="viewDetailsBtn" type="button">
+                  <i class="bi bi-search"></i> View Details
+                </button>
+              </div>
+            </div>
+
+            <div id="sdwanAlert" aria-live="polite"></div>
+
+            <h2 class="section-title">WAN 1 (BSNL MPLS) Configuration Details</h2>
+            <div id="mplsConfigTableContainer" class="table-container mb-4"><div class="empty-state"><i class="bi bi-cloud"></i><h6>Select a treasury and click View Details.</h6></div></div>
+
+            <h2 class="section-title">WAN 2 Configuration Details</h2>
+            <div id="wan2ConfigTableContainer" class="table-container mb-4"><div class="empty-state"><i class="bi bi-hdd-network"></i><h6>Select a treasury and click View Details.</h6></div></div>
+
+            <h2 class="section-title">FatPipe Device Configuration Details</h2>
+            <div id="installationTableContainer" class="table-container mb-4"><div class="empty-state"><i class="bi bi-server"></i><h6>Select a treasury and click View Details.</h6></div></div>
+
+            <h2 class="section-title">MPLS Contact Details</h2>
+            <div id="treasuryWorkingTableContainer" class="table-container mb-4"><div class="empty-state"><i class="bi bi-telephone"></i><h6>Select a treasury and click View Details.</h6></div></div>
+
+            <h2 class="section-title">Admin Contact Details</h2>
+            <div id="adminTableContainer" class="table-container"><div class="empty-state"><i class="bi bi-people"></i><h6>Select a treasury and click View Details.</h6></div></div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <div id="footerMount"></div>
+  </div>
+
+  <!-- Use the project's existing local libraries. Adjust filenames only if your repository uses different names. -->
+  <script src="../assets/js/jquery.min.js"></script>
+  <script src="../assets/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/select2.min.js"></script>
+
+  <!-- Load config and menu before layout; layout.js is shared across portal pages. -->
+  <script src="../assets/js/config/menu.js"></script>
+  <script src="../assets/js/config/sdwan-config.js"></script>
+  <script src="../assets/js/components/layout.js"></script>
+  <script src="../assets/js/pages/sdwan-status.js"></script>
+</body>
+</html>

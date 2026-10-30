@@ -1,0 +1,40 @@
+<!doctype html><html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>User Registration | Treasury Portal</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body class="app-page">
+<div class="app-layout">
+<div id="sidebarMount"></div>
+<div class="app-main">
+<div id="headerMount"></div>
+<main class="page-content">
+<p class="eyebrow accent">MODULE</p>
+<h1>User Registration</h1>
+<p class="muted">adding New User for access</p>
+<article class="content-card placeholder-card"style="min-width-100%;height: 100%;">
+
+<div class="module-icon violet">▥</div>
+<iframe id="content-frame" src="https://script.google.com/macros/s/AKfycbzjwTqsb78pyI9YUeRkFPMGz-7YkeXozP_vvHSrzcrkT8XmAqUwzi6JGuvauzS_f7Da/exec" title="Content" style="
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: var(--bg-primary, #ffffff);
+    position: relative;
+"></iframe>
+
+
+
+</article>
+</main>
+<div id="footerMount"></div>
+</div>
+</div>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/core/auth.js"></script>
+<script src="../assets/js/core/utils.js"></script>
+<script src="../assets/js/config/menu.js" defer></script>
+<script src="../assets/js/components/layout.js" defer></script>
+</body></html>

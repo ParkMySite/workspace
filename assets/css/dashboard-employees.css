@@ -1,0 +1,43 @@
+/* Additional styling for the employee live-data section on the dashboard. */
+.employee-live-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px;
+  margin: 22px 0;
+}
+.employee-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0 14px;
+}
+.employee-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 15px;
+  border: 1px solid rgba(120, 140, 170, .2);
+  border-radius: 13px;
+  background: rgba(120, 140, 170, .055);
+}
+.employee-metric span { font-size: .82rem; color: var(--muted, #667085); }
+.employee-metric strong { font-size: clamp(1.45rem, 2.4vw, 2rem); line-height: 1.1; color: var(--text, #10213b); }
+.employee-live-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-size: .78rem; color: var(--muted, #667085); }
+.refresh-button { border: 1px solid rgba(80, 110, 160, .35); border-radius: 9px; padding: 8px 11px; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.refresh-button:disabled { opacity: .6; cursor: wait; }
+.live-indicator { display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 50%; background: #16a34a; box-shadow: 0 0 0 3px rgba(22, 163, 74, .13); }
+.live-status-text { font-size: clamp(1.15rem, 2vw, 1.65rem) !important; }
+.employee-dot-success { background: #16a34a !important; }
+.employee-dot-error { background: #dc2626 !important; }
+.employee-live-error { margin-top: 12px; padding: 10px 12px; border-radius: 9px; background: rgba(220, 38, 38, .08); color: #b91c1c; font-size: .84rem; }
+.employee-preview-table-wrap { overflow-x: auto; }
+.employee-preview-table { width: 100%; border-collapse: collapse; text-align: left; }
+.employee-preview-table th, .employee-preview-table td { padding: 12px 9px; border-bottom: 1px solid rgba(120, 140, 170, .18); font-size: .86rem; }
+.employee-preview-table th { font-weight: 650; color: var(--muted, #667085); white-space: nowrap; }
+.employee-preview-table td:first-child { font-weight: 600; }
+.employee-empty { text-align: center; padding: 24px 8px !important; color: var(--muted, #667085); }
+.employee-preview-note { margin: 12px 0 0; font-size: .78rem; color: var(--muted, #667085); }
+.text-link, .activity-link { color: var(--accent, #315bd6); text-decoration: none; font-weight: 600; white-space: nowrap; }
+.text-link:hover, .activity-link:hover { text-decoration: underline; }
+@media (max-width: 900px) { .employee-live-grid { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { .employee-metric-grid { gap: 8px; } .employee-metric { padding: 12px; } .employee-live-footer { align-items: flex-start; } }
